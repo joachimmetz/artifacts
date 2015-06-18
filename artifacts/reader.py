@@ -8,6 +8,7 @@ import os
 from artifacts import artifact
 from artifacts import definitions
 from artifacts import errors
+from artifacts import provider
 
 import yaml
 
@@ -38,7 +39,7 @@ class ArtifactsReader(object):
     """
 
   @abc.abstractmethod
-  def ReadDirectory(self, path, extension=None):
+  def ReadDirectory(self, path, extension=None, ignore_list=None):
     """Reads artifact definitions from a directory.
 
     This function does not recurse sub directories.
@@ -47,6 +48,7 @@ class ArtifactsReader(object):
       path: the path of the directory to read from.
       extension: optional extension of the filenames to read.
                  The default is None.
+      ignore_list: optional list of filenames to ignore. The default is None.
 
     Yields:
       Artifact definitions (instances of ArtifactDefinition).
@@ -201,7 +203,7 @@ class YamlArtifactsReader(ArtifactsReader):
       for artifact_definition in self.ReadFileObject(file_object):
         yield artifact_definition
 
-  def ReadDirectory(self, path, extension=u'yaml'):
+  def ReadDirectory(self, path, extension=u'yaml', ignore_list=None):
     """Reads artifact definitions from YAML files in a directory.
 
     This function does not recurse sub directories.
@@ -210,6 +212,7 @@ class YamlArtifactsReader(ArtifactsReader):
       path: the path of the directory to read from.
       extension: optional extension of the filenames to read.
                  The default is 'yaml'.
+      ignore_list: optional list of filenames to ignore. The default is None.
 
     Yields:
       Artifact definitions (instances of ArtifactDefinition).
@@ -220,5 +223,128 @@ class YamlArtifactsReader(ArtifactsReader):
       glob_spec = os.path.join(path, u'*')
 
     for yaml_file in glob.glob(glob_spec):
+      if ignore_list and yaml_file in ignore_list:
+        continue
+
       for artifact_definition in self.ReadFile(yaml_file):
         yield artifact_definition
+
+
+class ProvidersReader(object):
+  """Class that implements the providers reader interface."""
+
+  @abc.abstractmethod
+  def ReadFileObject(self, file_object):
+    """Reads providers definitions from a file-like object.
+
+    Args:
+      file_object: the file-like object to read from.
+
+    Yields:
+      Provider definitions (instances of ProviderDefinition).
+    """
+
+  @abc.abstractmethod
+  def ReadFile(self, filename):
+    """Reads provider definitions from a file.
+
+    Args:
+      filename: the name of the file to read from.
+
+    Yields:
+      Provider definitions (instances of ProviderDefinition).
+    """
+
+
+class YamlProvidersReader(ProvidersReader):
+  """Class that implements the YAML providers reader."""
+
+  def _ReadMetadata(self, yaml_definition):
+    """Reads the metadata.
+
+    Args:
+      yaml_definition: the YAML metadata definition.
+
+    Raises:
+      FormatError: if the format of the YAML metadata definition is not set
+                   or not supported.
+    """
+    if not yaml_definition:
+      raise errors.FormatError(u'Missing YAML definition.')
+
+    format_version = yaml_definition.get(u'_format_version', None)
+    if format_version != 20150618:
+      raise errors.FormatError(u'Unsupported format version: {0!s}.'.format(
+          format_version))
+
+    definition_type = yaml_definition.get(u'_definition_type', None)
+    if definition_type != 'provider':
+      raise errors.FormatError(u'Unsupported definition type: {0!s}.'.format(
+          definition_type))
+
+  def _ReadProviderDefinition(self, yaml_definition):
+    """Reads an provider definition.
+
+    Args:
+      yaml_definition: the YAML provider definition.
+
+    Returns:
+      An provider definition (instance of ProviderDefinition) or None.
+
+    Raises:
+      FormatError: if the format of the YAML provider definition is not set
+                   or incorrect.
+    """
+    if not yaml_definition:
+      raise errors.FormatError(u'Missing YAML definition.')
+
+    name = yaml_definition.get(u'name', None)
+    if not name:
+      raise errors.FormatError(u'Invalid provider definition missing name.')
+
+    # The description is assumed to be mandatory.
+    description = yaml_definition.get(u'doc', None)
+    if not description:
+      raise errors.FormatError(
+          u'Invalid provider definition: {0:s} missing description.'.format(
+              name))
+
+    provider_definition = provider.ProviderDefinition(
+        name, description=description)
+
+    provider_definition.urls = yaml_definition.get(u'urls', [])
+
+    return provider_definition
+
+  def ReadFileObject(self, file_object):
+    """Reads provider definitions from a file-like object.
+
+    Args:
+      file_object: the file-like object to read from.
+
+    Yields:
+      Provider definitions (instances of ProviderDefinition).
+    """
+    # TODO: add try, except?
+    yaml_generator = yaml.safe_load_all(file_object)
+
+    for index, yaml_definition in enumerate(yaml_generator):
+      if index == 0:
+        self._ReadMetadata(yaml_definition)
+      else:
+        provider_definition = self._ReadProviderDefinition(yaml_definition)
+        if provider_definition:
+          yield provider_definition
+
+  def ReadFile(self, filename):
+    """Reads provider definitions from a YAML file.
+
+    Args:
+      filename: the name of the file to read from.
+
+    Yields:
+      Provider definitions (instances of ProviderDefinition).
+    """
+    with open(filename, 'rb') as file_object:
+      for provider_definition in self.ReadFileObject(file_object):
+        yield provider_definition

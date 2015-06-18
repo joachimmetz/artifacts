@@ -7,7 +7,18 @@ from artifacts import source_type
 
 
 class ArtifactDefinition(object):
-  """Class that implements the artifact reader interface."""
+  """Class that implements the artifact reader interface.
+
+  Attributes:
+    conditions: list of conditions of the artifact definition.
+    description: description of the artifact definition.
+    name: the name that uniquely identifiers the artifact definition.
+    labels: list of labels of the artifact definition.
+    provides: list of provider definitions (instance of ProviderDefinition).
+    sources: list of source types (instance of SourceType).
+    supported_os: list of names of supported operating systems.
+    urls: list of URLS with additional information.
+  """
 
   def __init__(self, name, description=None):
     """Initializes the artifact definition object.

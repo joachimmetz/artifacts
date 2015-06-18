@@ -1,0 +1,16 @@
+# This file contains the artifact provider definitions.
+
+_format_version: 20150618
+_definition_type: provider
+---
+name: code_page
+doc: The system codepage.
+type: SYSTEM
+---
+name: current_control_set
+doc: The Windows Registry current control set.
+type: WINDOWS_REGISTRY
+---
+name: environ_allusersappdata
+doc: The "All Users" application data.
+type: ENVIRONMENT

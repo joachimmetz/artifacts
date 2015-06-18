@@ -21,18 +21,23 @@ class ArtifactDefinitionsValidator(object):
     """Initializes the artifact definitions validator object."""
     super(ArtifactDefinitionsValidator, self).__init__()
     self._artifact_registry = registry.ArtifactDefinitionsRegistry()
+    self._providers = {}
 
   def CheckFile(self, filename):
     """Validates the artifacts definition in a specific file.
 
     Args:
       filename: the filename of the artifacts definition file.
+
+    Returns:
+      A boolean value that indicates if the file contains valid artifact
+      definitions.
     """
     result = True
-    artifact_reader = reader.YamlArtifactsReader()
+    artifacts_reader = reader.YamlArtifactsReader()
 
     try:
-      for artifact_definition in artifact_reader.ReadFile(filename):
+      for artifact_definition in artifacts_reader.ReadFile(filename):
         try:
           self._artifact_registry.RegisterDefinition(artifact_definition)
         except KeyError:
@@ -40,6 +45,36 @@ class ArtifactDefinitionsValidator(object):
               u'Duplicate artifact definition: {0:s} in file: {1:s}'.format(
                   artifact_definition.name, filename))
           result = False
+
+    except errors.FormatError as exception:
+      logging.warning(exception.message)
+      result = False
+
+    return result
+
+  # TODO: move into registry.
+  def ReadProviders(self, filename):
+    """Reads the providers from a specific file.
+
+    Args:
+      filename: the filename of the provider definition file.
+
+    Returns:
+      A boolean value that indicates if the provider definitions were read
+      successful.
+    """
+    result = True
+    providers_reader = reader.YamlProvidersReader()
+
+    try:
+      for provider_definition in providers_reader.ReadFile(filename):
+        if provider_definition.name in self._providers:
+          logging.warning(
+              u'Duplicate provider definition: {0:s} in file: {1:s}'.format(
+                  provider_definition.name, filename))
+          result = False
+
+        self._providers[provider_definition.name] = provider_definition
 
     except errors.FormatError as exception:
       logging.warning(exception.message)
@@ -56,6 +91,8 @@ def Main():
   """
   args_parser = argparse.ArgumentParser(description=(
       'Validates an artifact definitions file.'))
+
+  # TODO: add option to set providers definition file.
 
   args_parser.add_argument(
       'filename', nargs='?', action='store', metavar='artifacts.yaml',

@@ -15,7 +15,15 @@ class ArtifactDefinitionsValidatorTest(unittest.TestCase):
   def testArtifactDefinitionsValidator(self):
     """Runs the validator over all the YAML artifact definitions files."""
     validator_object = validator.ArtifactDefinitionsValidator()
+
+    providers_file = os.path.join('definitions', 'providers.yaml')
+    if os.path.exists(providers_file):
+      validator_object.ReadProviders(providers_file)
+
     for definitions_file in glob.glob(os.path.join('definitions', '*.yaml')):
+      if definitions_file == providers_file:
+        continue
+
       result = validator_object.CheckFile(definitions_file)
       self.assertTrue(result, msg='in definitions file: {0:s}'.format(
           definitions_file))

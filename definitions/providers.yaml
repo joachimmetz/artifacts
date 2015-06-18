@@ -1,0 +1,155 @@
+# This file contains the artifact provider definitions.
+
+_format_version: 20150618
+_definition_type: provider
+---
+name: code_page
+doc: The system codepage.
+type: SYSTEM
+---
+name: current_control_set
+doc: The Windows Registry current control set.
+type: WINDOWS_REGISTRY
+---
+name: domain
+doc: The current domain name.
+type: SYSTEM
+---
+name: environ_allusersappdata
+doc: The "All Users" application data.
+type: ENVIRONMENT
+---
+name: environ_allusersprofile
+doc: |
+  The program data location.
+
+  Typically defined at runtime by: %AllUsersProfile% or %ProgramData%.
+type: ENVIRONMENT
+urls: ['https://en.wikipedia.org/wiki/Environment_variable']
+---
+name: environ_path
+doc: TODO
+type: TODO
+---
+name: environ_programfiles
+doc: TODO
+type: TODO
+---
+name: environ_programfilesx86
+doc: TODO
+type: TODO
+---
+name: environ_systemdrive
+doc: TODO
+type: TODO
+---
+name: environ_systemroot
+doc: TODO
+type: TODO
+---
+name: environ_temp
+doc: TODO
+type: TODO
+---
+name: environ_windir
+doc: TODO
+type: TODO
+---
+name: os_major_version
+doc: The operating system major version
+type: SYSTEM
+---
+name: os_minor_version
+doc: The operating system minor version
+type: SYSTEM
+---
+name: os_release
+doc: The operating system release information.
+type: SYSTEM
+---
+name: time_zone
+doc: The system time zone.
+type: SYSTEM
+---
+name: users.appdata
+doc: |
+  The user specific roaming application data directory on Windows.
+
+  Typically defined at runtime by: %AppData%
+type: ENVIRONMENT
+urls: ['https://en.wikipedia.org/wiki/Environment_variable']
+---
+name: users.desktop
+doc: The user specific Cookies directory on Windows
+type: ENVIRONMENT
+---
+name: users.desktop
+doc: The user specific Desktop directory on Windows
+type: ENVIRONMENT
+---
+name: users.homedir
+doc: |
+  The user specific home directory.
+
+  Typically defined at runtime by: $HOME or %UserProfile%.
+type: ENVIRONMENT
+urls: ['https://en.wikipedia.org/wiki/Environment_variable']
+---
+name: users.internet_cache
+doc: The user specific MSIE Internet Cache directory on Windows
+type: ENVIRONMENT
+---
+name: users.last_logon
+doc: TODO
+type: TODO
+---
+name: users.localappdata
+doc: |
+  The user specific local application data directory on Windows.
+
+  Typically defined at runtime by: %LocalAppData%
+type: ENVIRONMENT
+---
+name: users.localappdata_low
+doc: The user specific low privilege local application data directory on Windows.
+type: ENVIRONMENT
+---
+name: users.local_settings
+doc: TODO
+type: TODO
+---
+name: users.personal
+doc: TODO
+type: TODO
+---
+name: users.recent
+doc: TODO
+type: TODO
+---
+name: users.sid
+doc: TODO
+type: TODO
+---
+name: users.startup
+doc: TODO
+type: TODO
+---
+name: users.temp
+doc: |
+  The user specific temp directory on Windows.
+
+  Typically defined at runtime by: %Temp% or %Tmp%.
+type: ENVIRONMENT
+urls: ['https://en.wikipedia.org/wiki/Environment_variable']
+---
+name: users.userdomain
+doc: TODO
+type: TODO
+---
+name: users.username
+doc: TODO
+type: TODO
+---
+name: users.userprofile
+doc: TODO
+type: TODO

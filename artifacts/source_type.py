@@ -42,7 +42,11 @@ class SourceType(object):
 
 
 class ArtifactSourceType(SourceType):
-  """Class that implements the artifacts source type."""
+  """Class that implements the artifacts source type.
+
+  Attributes:
+    names: list of artifact definition names.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_ARTIFACT
 
@@ -50,7 +54,7 @@ class ArtifactSourceType(SourceType):
     """Initializes the source type object.
 
     Args:
-      names: optional list of artifact definition names.  The default is None.
+      names: optional list of artifact definition names. The default is None.
 
     Raises:
       FormatError: when artifact names is not set.
@@ -63,7 +67,13 @@ class ArtifactSourceType(SourceType):
 
 
 class FileSourceType(SourceType):
-  """Class that implements the file source type."""
+  """Class that implements the file source type.
+
+  Attributes:
+    paths: list of paths. The paths are considered relative
+           to the root of the file system.
+    separator: string containing the path segment separator.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_FILE
 
@@ -88,7 +98,12 @@ class FileSourceType(SourceType):
 
 
 class CommandSourceType(SourceType):
-  """Class that implements the command source type."""
+  """Class that implements the command source type.
+
+  Attributes:
+    args: list of strings that will be passed as arguments to the command.
+    cmd: string representing the command to run.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_COMMAND
 
@@ -96,8 +111,9 @@ class CommandSourceType(SourceType):
     """Initializes the source type object.
 
     Args:
-      args: list of strings that will be passed as arguments to the command.
-      cmd: string representing the command to run.
+      args: optional list of strings that will be passed as arguments to
+            the command. The default is None.
+      cmd: optional string representing the command to run. The default is None.
 
     Raises:
       FormatError: when args or cmd is not set.
@@ -111,7 +127,13 @@ class CommandSourceType(SourceType):
 
 
 class PathSourceType(SourceType):
-  """Class that implements the path source type."""
+  """Class that implements the path source type.
+
+  Attributes:
+    paths: list of paths. The paths are considered relative
+           to the root of the file system.
+    separator: string containing the path segment separator.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_PATH
 
@@ -136,7 +158,12 @@ class PathSourceType(SourceType):
 
 
 class WindowsRegistryKeySourceType(SourceType):
-  """Class that implements the Windows Registry key source type."""
+  """Class that implements the Windows Registry key source type.
+
+  Attributes:
+    keys: list of key paths. The key paths are considered relative
+          to the root of the Windows Registry.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_WINDOWS_REGISTRY_KEY
 
@@ -158,7 +185,13 @@ class WindowsRegistryKeySourceType(SourceType):
 
 
 class WindowsRegistryValueSourceType(SourceType):
-  """Class that implements the Windows Registry value source type."""
+  """Class that implements the Windows Registry value source type.
+
+  Attributes:
+    key_value_pairs: list of key path and value name pairs.
+                     The key paths are considered relative to the root
+                     of the Windows Registry.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_WINDOWS_REGISTRY_VALUE
 
@@ -171,7 +204,7 @@ class WindowsRegistryValueSourceType(SourceType):
                        of the Windows Registry. The default is None.
 
     Raises:
-      FormatError: when key value pairs is not set.
+      FormatError: when key value pairs is not set or invalid.
     """
     if not key_value_pairs:
       raise errors.FormatError(u'Missing key value pairs value.')
@@ -179,19 +212,25 @@ class WindowsRegistryValueSourceType(SourceType):
     if not isinstance(key_value_pairs, list):
       raise errors.FormatError(u'key_value_pairs must be a list')
 
-    for pair in key_value_pairs:
-      if not isinstance(pair, dict):
+    for key_value_pair in key_value_pairs:
+      if not isinstance(key_value_pair, dict):
         raise errors.FormatError(u'key_value_pair must be a dict')
-      if set(pair.keys()) != set(['key', 'value']):
-        raise errors.FormatError(u'key_value_pair missing "key" and "value"'
-                                 u' keys, got: {}'.format(key_value_pairs))
+
+      if set(key_value_pair.keys()) != set(['key', 'value']):
+        raise errors.FormatError((
+            u'key_value_pair missing "key" and "value" keys, '
+            u'got: {0:s}').format(u', '.join(key_value_pair.keys())))
 
     super(WindowsRegistryValueSourceType, self).__init__()
     self.key_value_pairs = key_value_pairs
 
 
 class WMIQuerySourceType(SourceType):
-  """Class that implements the WMI query source type."""
+  """Class that implements the WMI query source type.
+
+  Attributes:
+    query: string containing the WMI query.
+  """
 
   TYPE_INDICATOR = definitions.TYPE_INDICATOR_WMI_QUERY
 
