@@ -1,5 +1,9 @@
 # Java related artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: JavaCacheFiles
 doc: Java Plug-in cache.
 sources:

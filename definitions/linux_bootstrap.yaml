@@ -1,10 +1,15 @@
 # Linux bootstrap artifacts.
 
-# Linux specific distribution information.
-# See: lsb_release(1) man page, or the LSB Specification under the 'Command
-# Behaviour' section.
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: LinuxRelease
-doc: Linux distribution name.
+doc: |
+  Linux distribution name.
+
+  See: lsb_release(1) man page, or the LSB Specification under the 'Command
+  Behaviour' section.
 sources:
 - type: FILE
   attributes:
@@ -16,4 +21,3 @@ sources:
 provides: [os_release, os_major_version, os_minor_version]
 labels: [Software]
 supported_os: [Linux]
-

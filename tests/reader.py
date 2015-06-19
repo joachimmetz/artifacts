@@ -202,10 +202,7 @@ sources:
     """Tests the ReadDirectory function."""
     artifacts_reader = reader.YamlArtifactsReader()
 
-    ignore_list = [os.path.join('test_data', 'providers.yaml')]
-
-    artifact_definitions = list(artifacts_reader.ReadDirectory(
-        'test_data', ignore_list=ignore_list))
+    artifact_definitions = list(artifacts_reader.ReadDirectory('test_data'))
 
     self.assertEqual(len(artifact_definitions), 7)
 

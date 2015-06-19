@@ -1,5 +1,9 @@
 # Anti-Virus artifacts
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: SophosAVLogs
 doc: Sophos Anti-Virus log files.
 sources:

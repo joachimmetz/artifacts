@@ -1,5 +1,9 @@
 # Configuration file artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: SshdConfigFile
 doc: Sshd configuration
 sources:

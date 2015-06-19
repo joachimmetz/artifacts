@@ -1,5 +1,9 @@
 # Linux specific /proc artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: LinuxASLREnabled
 doc: Kernel ASLR state.
 sources:

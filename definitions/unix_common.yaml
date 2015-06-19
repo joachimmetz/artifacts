@@ -1,5 +1,9 @@
 # Artifacts common to Unix based OSs
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: UsersShellConfigs
 doc: Common unix user shell configuration files.
 sources:

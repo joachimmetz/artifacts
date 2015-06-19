@@ -46,13 +46,20 @@ class ArtifactDefinitionsValidator(object):
                   artifact_definition.name, filename))
           result = False
 
+        for provider in artifact_definition.provides:
+          if provider not in self._providers:
+            logging.warning((
+                u'Undefined provider: {0:s} in artifact definition: {1:s} '
+                u'in file: {2:s}').format(
+                    provider, artifact_definition.name, filename))
+            result = False
+
     except errors.FormatError as exception:
       logging.warning(exception.message)
       result = False
 
     return result
 
-  # TODO: move into registry.
   def ReadProviders(self, filename):
     """Reads the providers from a specific file.
 

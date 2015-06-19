@@ -1,6 +1,10 @@
 # These are bootstrap artifacts that are used to build the core knowledgebase
 # used for interpolation in the rest of the artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: AllUsersAppDataEnvironmentVariable
 doc: The %ProgramData% environment variable.
 sources:

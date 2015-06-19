@@ -1,5 +1,9 @@
 # Artifacts from the Kaspersky Careto report.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: KasperskyCaretoIndicators
 doc: Kaspersky Careto Indicators.
 sources:

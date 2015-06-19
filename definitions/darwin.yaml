@@ -1,5 +1,9 @@
 # Mac OS X (Darwin) specific artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: OSXLaunchAgents
 doc: Mac OS X Launch Agent files.
 sources:

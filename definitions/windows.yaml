@@ -1,5 +1,9 @@
 # Windows specific artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: ApplicationEventLog
 doc: Windows Application Event log.
 sources:

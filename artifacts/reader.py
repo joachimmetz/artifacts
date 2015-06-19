@@ -39,7 +39,7 @@ class ArtifactsReader(object):
     """
 
   @abc.abstractmethod
-  def ReadDirectory(self, path, extension=None, ignore_list=None):
+  def ReadDirectory(self, path, extension=None):
     """Reads artifact definitions from a directory.
 
     This function does not recurse sub directories.
@@ -48,7 +48,6 @@ class ArtifactsReader(object):
       path: the path of the directory to read from.
       extension: optional extension of the filenames to read.
                  The default is None.
-      ignore_list: optional list of filenames to ignore. The default is None.
 
     Yields:
       Artifact definitions (instances of ArtifactDefinition).
@@ -146,6 +145,32 @@ class YamlArtifactsReader(ArtifactsReader):
 
     artifact_definition.labels = yaml_definition.get(u'labels', [])
 
+  def _ReadMetadata(self, yaml_definition):
+    """Reads the metadata.
+
+    Args:
+      yaml_definition: the YAML metadata definition.
+
+    Returns:
+      A dictionary containing the metadata or None if no metadata was read.
+
+    Raises:
+      FormatError: if the format of the YAML metadata definition is not set
+                   or not supported.
+    """
+    if not yaml_definition:
+      raise errors.FormatError(u'Missing YAML definition.')
+
+    yaml_metadata = yaml_definition.get('metadata', None)
+    if not yaml_metadata:
+      return
+
+    metadata = {}
+    metadata['format_version'] = yaml_metadata.get(u'format_version', None)
+    metadata['definition_type'] = yaml_metadata.get(u'definition_type', None)
+
+    return metadata
+
   def _ReadSupportedOS(self, yaml_definition, definition_object, name):
     """Reads the optional artifact or source type supported OS.
 
@@ -184,10 +209,18 @@ class YamlArtifactsReader(ArtifactsReader):
     Yields:
       Artifact definitions (instances of ArtifactDefinition).
     """
-    # TODO: add try, except?
     yaml_generator = yaml.safe_load_all(file_object)
 
-    for yaml_definition in yaml_generator:
+    for index, yaml_definition in enumerate(yaml_generator):
+      if index == 0:
+        metadata = self._ReadMetadata(yaml_definition)
+        if metadata:
+          definition_type = metadata.get('definition_type', None)
+          if definition_type != 'artifact':
+            break
+
+          continue
+
       yield self._ReadArtifactDefinition(yaml_definition)
 
   def ReadFile(self, filename):
@@ -203,7 +236,7 @@ class YamlArtifactsReader(ArtifactsReader):
       for artifact_definition in self.ReadFileObject(file_object):
         yield artifact_definition
 
-  def ReadDirectory(self, path, extension=u'yaml', ignore_list=None):
+  def ReadDirectory(self, path, extension=u'yaml'):
     """Reads artifact definitions from YAML files in a directory.
 
     This function does not recurse sub directories.
@@ -212,7 +245,6 @@ class YamlArtifactsReader(ArtifactsReader):
       path: the path of the directory to read from.
       extension: optional extension of the filenames to read.
                  The default is 'yaml'.
-      ignore_list: optional list of filenames to ignore. The default is None.
 
     Yields:
       Artifact definitions (instances of ArtifactDefinition).
@@ -223,9 +255,6 @@ class YamlArtifactsReader(ArtifactsReader):
       glob_spec = os.path.join(path, u'*')
 
     for yaml_file in glob.glob(glob_spec):
-      if ignore_list and yaml_file in ignore_list:
-        continue
-
       for artifact_definition in self.ReadFile(yaml_file):
         yield artifact_definition
 
@@ -265,6 +294,9 @@ class YamlProvidersReader(ProvidersReader):
     Args:
       yaml_definition: the YAML metadata definition.
 
+    Returns:
+      A dictionary containing the metadata or None if no metadata was read.
+
     Raises:
       FormatError: if the format of the YAML metadata definition is not set
                    or not supported.
@@ -272,15 +304,15 @@ class YamlProvidersReader(ProvidersReader):
     if not yaml_definition:
       raise errors.FormatError(u'Missing YAML definition.')
 
-    format_version = yaml_definition.get(u'_format_version', None)
-    if format_version != 20150618:
-      raise errors.FormatError(u'Unsupported format version: {0!s}.'.format(
-          format_version))
+    yaml_metadata = yaml_definition.get('metadata', None)
+    if not yaml_metadata:
+      return
 
-    definition_type = yaml_definition.get(u'_definition_type', None)
-    if definition_type != 'provider':
-      raise errors.FormatError(u'Unsupported definition type: {0!s}.'.format(
-          definition_type))
+    metadata = {}
+    metadata['format_version'] = yaml_metadata.get(u'format_version', None)
+    metadata['definition_type'] = yaml_metadata.get(u'definition_type', None)
+
+    return metadata
 
   def _ReadProviderDefinition(self, yaml_definition):
     """Reads an provider definition.
@@ -289,7 +321,7 @@ class YamlProvidersReader(ProvidersReader):
       yaml_definition: the YAML provider definition.
 
     Returns:
-      An provider definition (instance of ProviderDefinition) or None.
+      An provider definition (instance of ProviderDefinition).
 
     Raises:
       FormatError: if the format of the YAML provider definition is not set
@@ -325,16 +357,19 @@ class YamlProvidersReader(ProvidersReader):
     Yields:
       Provider definitions (instances of ProviderDefinition).
     """
-    # TODO: add try, except?
     yaml_generator = yaml.safe_load_all(file_object)
 
     for index, yaml_definition in enumerate(yaml_generator):
       if index == 0:
-        self._ReadMetadata(yaml_definition)
-      else:
-        provider_definition = self._ReadProviderDefinition(yaml_definition)
-        if provider_definition:
-          yield provider_definition
+        metadata = self._ReadMetadata(yaml_definition)
+        if metadata:
+          definition_type = metadata.get('definition_type', None)
+          if definition_type != 'provider':
+            break
+
+          continue
+
+      yield self._ReadProviderDefinition(yaml_definition)
 
   def ReadFile(self, filename):
     """Reads provider definitions from a YAML file.

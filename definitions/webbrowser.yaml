@@ -1,5 +1,9 @@
 # Web browser artifacts.
 
+metadata:
+  format_version: 20150618
+  definition_type: artifact
+---
 name: ChromeCache
 doc: |
   Google Chrome, Canary and Chromium browser caches.

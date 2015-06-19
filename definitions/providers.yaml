@@ -1,7 +1,8 @@
 # This file contains the artifact provider definitions.
 
-_format_version: 20150618
-_definition_type: provider
+metadata:
+  format_version: 20150618
+  definition_type: provider
 ---
 name: code_page
 doc: The system codepage.
@@ -79,7 +80,7 @@ doc: |
 type: ENVIRONMENT
 urls: ['https://en.wikipedia.org/wiki/Environment_variable']
 ---
-name: users.desktop
+name: users.cookies
 doc: The user specific Cookies directory on Windows
 type: ENVIRONMENT
 ---
